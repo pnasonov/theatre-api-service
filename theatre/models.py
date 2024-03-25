@@ -21,6 +21,9 @@ class Play(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
 
+    class Meta:
+        ordering = ["title"]
+
     def __str__(self) -> str:
         return self.title
 
@@ -43,6 +46,9 @@ class Performance(models.Model):
     )
     show_time = models.DateTimeField()
 
+    class Meta:
+        ordering = ["-show_time"]
+
     def __str__(self) -> str:
         return f"{self.play} - {self.theatre_hall} at {self.show_time}"
 
@@ -52,6 +58,9 @@ class Reservation(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE
     )
+
+    class Meta:
+        ordering = ["-created_at"]
 
     def __str__(self) -> str:
         return f"{self.user} at {self.created_at}"
@@ -66,6 +75,9 @@ class Ticket(models.Model):
     reservation = models.ForeignKey(
         Reservation, on_delete=models.CASCADE, related_name="tickets"
     )
+
+    class Meta:
+        ordering = ["row", "seat"]
 
     def __str__(self) -> str:
         return f"{self.performance} row: {self.row} seat: {self.seat}"
