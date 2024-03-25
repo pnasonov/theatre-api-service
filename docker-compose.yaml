@@ -1,5 +1,5 @@
 services:
-  cinema:
+  theatre:
     build:
       context: .
     env_file:
