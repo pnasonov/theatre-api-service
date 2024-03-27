@@ -17,6 +17,8 @@ from theatre.serializers import (
     ActorSerializer,
     GenreSerializer,
     PlaySerializer,
+    PlayListSerializer,
+    PlayPostSerializer,
     TheatreHallSerializer,
     PerformanceSerializer,
     ReservationSerializer,
@@ -57,6 +59,15 @@ class PlayViewSet(
     def _params_to_ints(qs) -> list[int]:
         """Converts a list of string IDs to a list of integers"""
         return [int(str_id) for str_id in qs.split(",")]
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            self.serializer_class = PlayListSerializer
+
+        if self.action == "post":
+            self.serializer_class = PlayPostSerializer
+
+        return self.serializer_class
 
     def get_queryset(self) -> QuerySet:
         """Retrieve the plays with filters"""

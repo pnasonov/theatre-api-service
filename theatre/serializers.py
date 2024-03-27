@@ -1,5 +1,6 @@
 from django.db import transaction
 from rest_framework import serializers
+from django.shortcuts import get_object_or_404
 
 from theatre.models import (
     Actor,
@@ -27,21 +28,29 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class PlaySerializer(serializers.ModelSerializer):
-    actors = ActorSerializer(many=True, read_only=False)
-    genres = GenreSerializer(many=True, read_only=False)
 
     class Meta:
         model = Play
         fields = "__all__"
+
+
+class PlayListSerializer(PlaySerializer):
+    actors = ActorSerializer(many=True, read_only=False)
+    genres = GenreSerializer(many=True, read_only=False)
+
+
+class PlayPostSerializer(PlaySerializer):
+    actors = serializers.ListField(child=serializers.IntegerField())
+    genres = serializers.ListField(child=serializers.IntegerField())
 
     def create(self, validated_data):
         actors_data = validated_data.pop("actors")
         genres_data = validated_data.pop("genres")
         play = Play.objects.create(**validated_data)
         for actor_data in actors_data:
-            play.actors.add(Actor.objects.create(**actor_data))
+            play.actors.add(get_object_or_404(Actor, id=actor_data))
         for genre_data in genres_data:
-            play.genres.add(Genre.objects.create(**genre_data))
+            play.genres.add(get_object_or_404(Genre, id=genre_data))
         return play
 
 
